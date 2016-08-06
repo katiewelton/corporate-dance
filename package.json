@@ -1,14 +1,14 @@
 {
   "name": "corporate-dance",
   "version": "1.0.0",
-  "description": "",
-  "author": "",
+  "description": "Corporate Dance site created by Katie Welton",
+  "author": "Katie Welton",
   "license": "MIT",
   "private": true,
   "scripts": {
     "watch": "brunch watch",
     "build": "brunch build --production",
-    "start": "php -S localhost:3000 -t ../../../"
+    "start": "wp server --host=0.0.0.0:3000 --docroot=../../../"
   },
   "dependencies": {},
   "devDependencies": {
