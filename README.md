@@ -74,6 +74,28 @@ When entering these database details into the WordPress setup screen, ensure
 that the host field is set to `127.0.0.1` rather than `localhost` otherwise you
 will receive a connection error.
 
+## Install/Update CMB2 within project
+
+This project uses the [CMB2](https://github.com/WebDevStudios/CMB2) library
+to help generate and manage custom metaboxes within the WP admin. It is
+included within this project via submodule.
+
+To add CMB2 library to the project run the following command within the theme
+directory you wish to add the CMB2 library into:
+
+`git submodule add git@github.com:WebDevStudios/CMB2.git`
+
+When setting up the project for the first time (or installing CMB2 for the
+first time), checkout the develop branch and run the following command
+`git submodule update --init`. This will pull the CMB2 library into the
+correct folder within the project's theme.
+
+If you need to update the CMB2 library (following and update to the library
+repo), run the following command: `git submodule update`.
+
+NB: The CMB2 files are not commited directly within this repo as there should
+be no reason to change the library code.
+
 ##Testing
 
 The server will allow for devices connected on the same wifi to access the
