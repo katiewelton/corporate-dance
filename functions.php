@@ -6,6 +6,8 @@ define('LOAD_AFTER_THEME', 100);
 define('PUBLIC_FOLDER', get_stylesheet_directory_uri() . '/public');
 define('COMPONENTS', '/app/views/components');
 
+require_once(get_template_directory() . '/includes/class.wp-with-brunch.php');
+
 function get_template_page_id($template) {
   global $wpdb;
 
@@ -25,8 +27,9 @@ function format_class_filename($filename) {
   );
 }
 
-class WPTheme {
+class WPTheme extends WPBrunch {
   public static function init() {
+    parent::init();
     add_action('wp_enqueue_scripts', [__CLASS__, 'style_script_includes']);
     spl_autoload_register([__CLASS__, 'autoload_classes']);
     spl_autoload_register([__CLASS__, 'autoload_lib_classes']);
@@ -46,31 +49,6 @@ class WPTheme {
       '4.6.3'
     );
     wp_enqueue_style('font-awesome');
-
-    self::enqueue_file(
-      'vendor_js',
-      PUBLIC_FOLDER . '/js/vendor.js',
-      'script',
-      [
-        'deps' => ['jquery'],
-        'in_footer' => true
-      ]
-    );
-    self::enqueue_file(
-      'theme_js',
-      PUBLIC_FOLDER . '/js/app.js',
-      'script',
-      [
-        'deps' => ['jquery', 'vendor_js'],
-        'in_footer' => true
-      ]
-    );
-    self::enqueue_file(
-      'vendor_style',
-      PUBLIC_FOLDER . '/css/vendor.css',
-      'style'
-    );
-    self::enqueue_file('theme_style', PUBLIC_FOLDER . '/css/app.css', 'style');
   }
 
   public static function register_nav_menus() {
@@ -112,23 +90,6 @@ class WPTheme {
     if(file_exists($lib_class_name)) require_once($lib_class_name);
   }
 
-  private static function enqueue_file($handle, $file_path, $type = 'script', array $enqueue_args = []) {
-    if(file_exists(self::real_file_path($file_path))) {
-      $_self = __CLASS__;
-      $register_args = call_user_func(
-        "$_self::merge_args_for_$type",
-        $enqueue_args
-      );
-
-      call_user_func(
-        "$_self::load_file_as_$type",
-        $handle,
-        $file_path,
-        $register_args
-      );
-    }
-  }
-
  public static function include_additional_files() {
     $template_url = get_template_directory();
     // new CustomMetaboxes();
@@ -144,62 +105,6 @@ class WPTheme {
     if(isset($_SERVER['HTTP_USER_AGENT']) && (strpos($_SERVER['HTTP_USER_AGENT'], 'MSIE') !== false)) {
       header('X-UA-Compatible: IE=edge,chrome=1');
     }
-  }
-
-  private static function real_file_path($file_path) {
-    if(strpos($file_path, PUBLIC_FOLDER) !== false) {
-      $real_file_path = str_replace(
-        PUBLIC_FOLDER,
-        get_stylesheet_directory() . '/public',
-        $file_path
-      );
-
-      return $real_file_path;
-    }
-
-    return $file_path;
-  }
-
-  private static function merge_args_for_script($args) {
-    $default_args = [
-      'deps' => [],
-      'version' => false,
-      'in_footer' => false
-    ];
-
-    return array_merge($default_args, $args);
-  }
-
-  private static function merge_args_for_style($args) {
-    $default_args = [
-      'deps' => [],
-      'version' => false,
-      'media' => 'all'
-    ];
-
-    return array_merge($default_args, $args);
-  }
-
-  private static function load_file_as_script($handle, $file_path, $args) {
-    wp_register_script(
-      $handle,
-      $file_path,
-      $args['deps'],
-      $args['version'],
-      $args['in_footer']
-    );
-    wp_enqueue_script($handle);
-  }
-
-  private static function load_file_as_style($handle, $file_path, $args) {
-    wp_register_style(
-      $handle,
-      $file_path,
-      $args['deps'],
-      $args['version'],
-      $args['media']
-    );
-    wp_enqueue_style($handle);
   }
 }
 
